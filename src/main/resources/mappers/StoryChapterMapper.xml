@@ -1,0 +1,229 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.javaclimb.puzzlegameback.mappers.StoryChapterMapper">
+
+	<!--实体映射-->
+	<resultMap id="base_result_map" type="com.javaclimb.puzzlegameback.entity.po.StoryChapter">
+		<!--故事id-->
+		<result column="story_id" property="storyId"  />
+		<!--章节id-->
+		<result column="chapter_id" property="chapterId"  />
+		<!--章节次序-->
+		<result column="order" property="order"  />
+
+		<result column="chapter_name" property="chapterName"  />
+		<result column="chapter_text" property="chapterText"  />
+	</resultMap>
+
+
+	<!-- 通用查询结果列-->
+	<sql id="base_column_list">
+		 story_id,chapter_id,order,chapter_name,chapter_text
+	</sql>
+
+	<sql id="base_condition_filed">
+		<if test="query.storyId != null and query.storyId!=''">
+			 and  story_id = #{query.storyId}
+		</if>
+		<if test="query.chapterId != null and query.chapterId!=''">
+			 and  chapter_id = #{query.chapterId}
+		</if>
+		<if test="query.order != null">
+			 and  order = #{query.order}
+		</if>
+	</sql>
+
+	<!-- 通用查询条件列-->
+	<sql id="query_condition">
+		<where>
+			<include refid="base_condition_filed" />
+			<if test="query.storyIdFuzzy!= null  and query.storyIdFuzzy!=''">
+				 and  story_id like concat('%', #{query.storyIdFuzzy}, '%')
+			</if>
+			<if test="query.chapterIdFuzzy!= null  and query.chapterIdFuzzy!=''">
+				 and  chapter_id like concat('%', #{query.chapterIdFuzzy}, '%')
+			</if>
+		</where>
+	</sql>
+
+	<!-- 查询集合-->
+	<select id="selectList" resultMap="base_result_map" >
+		 SELECT <include refid="base_column_list" /> FROM story_chapter <include refid="query_condition" />
+		 <if test="query.orderBy!=null">
+			 order by ${query.orderBy}
+		 </if>
+		 <if test="query.simplePage!=null">
+			 limit #{query.simplePage.start},#{query.simplePage.end}
+		 </if>
+	</select>
+
+	<!-- 查询数量-->
+	<select id="selectCount" resultType="java.lang.Integer" >
+		 SELECT count(1) FROM story_chapter <include refid="query_condition" />
+	</select>
+
+	<!-- 插入 （匹配有值的字段）-->
+	<insert id="insert" parameterType="com.javaclimb.puzzlegameback.entity.po.StoryChapter">
+		 INSERT INTO story_chapter
+		 <trim prefix="(" suffix=")" suffixOverrides="," >
+			<if test="bean.storyId != null">
+				 story_id,
+			</if>
+			<if test="bean.chapterId != null">
+				 chapter_id,
+			</if>
+			<if test="bean.order != null">
+				 `order`,
+			</if>
+		 </trim>
+		 <trim prefix="values (" suffix=")" suffixOverrides="," >
+			<if test="bean.storyId!=null">
+				 #{bean.storyId},
+			</if>
+			<if test="bean.chapterId!=null">
+				 #{bean.chapterId},
+			</if>
+			<if test="bean.order!=null">
+				 #{bean.order},
+			</if>
+		 </trim>
+	</insert>
+
+	<!-- 插入或者更新 （匹配有值的字段）-->
+	<insert id="insertOrUpdate" parameterType="com.javaclimb.puzzlegameback.entity.po.StoryChapter">
+		 INSERT INTO story_chapter
+		 <trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="bean.storyId != null">
+				 story_id,
+			</if>
+			<if test="bean.chapterId != null">
+				 chapter_id,
+			</if>
+			<if test="bean.order != null">
+				 order,
+			</if>
+		 </trim>
+		 <trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="bean.storyId!=null">
+				 #{bean.storyId},
+			</if>
+			<if test="bean.chapterId!=null">
+				 #{bean.chapterId},
+			</if>
+			<if test="bean.order!=null">
+				 #{bean.order},
+			</if>
+		 </trim>
+		 on DUPLICATE key update 
+		 <trim prefix="" suffix="" suffixOverrides=",">
+			<if test="bean.storyId!=null">
+				 story_id = VALUES(story_id),
+			</if>
+			<if test="bean.chapterId!=null">
+				 chapter_id = VALUES(chapter_id),
+			</if>
+			<if test="bean.order!=null">
+				 order = VALUES(order),
+			</if>
+		 </trim>
+	</insert>
+
+	<!-- 添加 （批量插入）-->
+	<insert id="insertBatch" parameterType="com.javaclimb.puzzlegameback.entity.po.StoryChapter">
+		 INSERT INTO story_chapter(
+			 story_id,
+			 chapter_id,
+			 order
+		 )values
+		 <foreach collection="list" item="item" separator=",">
+			 (
+				 #{item.storyId},
+				 #{item.chapterId},
+				 #{item.order}
+			 )
+		 </foreach>
+	</insert>
+
+	<!-- 批量新增修改 （批量插入）-->
+	<insert id="insertOrUpdateBatch" parameterType="com.javaclimb.puzzlegameback.entity.po.StoryChapter">
+		 INSERT INTO story_chapter(
+			 story_id,
+			 chapter_id,
+			 order
+		 )values
+		 <foreach collection="list" item="item" separator=",">
+			 (
+				 #{item.storyId},
+				 #{item.chapterId},
+				 #{item.order}
+			 )
+		 </foreach>
+			on DUPLICATE key update 
+			story_id = VALUES(story_id),
+			chapter_id = VALUES(chapter_id),
+			order = VALUES(order)
+	</insert>
+
+	<!--多条件修改-->
+	<update id="updateByParam" parameterType="com.javaclimb.puzzlegameback.entity.query.StoryChapterQuery">
+		 UPDATE story_chapter
+ 		 <set> 
+			<if test="bean.storyId != null">
+				 story_id = #{bean.storyId},
+			</if>
+			<if test="bean.chapterId != null">
+				 chapter_id = #{bean.chapterId},
+			</if>
+			<if test="bean.order != null">
+				 order = #{bean.order},
+			</if>
+ 		 </set>
+ 		 <include refid="query_condition" />
+	</update>
+
+	<!--多条件删除-->
+	<delete id="deleteByParam">
+		 delete from story_chapter
+ 		 <include refid="query_condition" />
+	</delete>
+
+	<!-- 根据StoryId修改-->
+	<update id="updateByStoryId" parameterType="com.javaclimb.puzzlegameback.entity.po.StoryChapter">
+		 UPDATE story_chapter
+ 		 <set> 
+			<if test="bean.chapterId != null">
+				 chapter_id = #{bean.chapterId},
+			</if>
+			<if test="bean.order != null">
+				 order = #{bean.order},
+			</if>
+ 		 </set>
+ 		 where story_id=#{storyId}
+	</update>
+
+	<!-- 根据StoryId删除-->
+	<delete id="deleteByStoryId">
+		delete from story_chapter where story_id=#{storyId}
+	</delete>
+
+	<delete id="deleteByChapterId">
+		delete from story_chapter where chapter_id=#{chapterId}
+	</delete>
+
+	<!-- 根据PrimaryKey获取对象-->
+	<select id="selectByStoryId" resultMap="base_result_map" >
+		select <include refid="base_column_list" /> from story_chapter where story_id=#{storyId}
+	</select>
+
+	<!-- 根据故事id获取章节-->
+	<select id="selectChapterByStoryId" resultMap="base_result_map" >
+		select sc.story_id, sc.chapter_id, sc.`order`,c.name as chapter_name, c.text as chapter_text
+		from story_chapter sc
+		left join chapter c
+		on sc.chapter_id = c.chapter_id
+		where story_id=#{storyId}
+		order by sc.`order`
+	</select>
+
+</mapper>

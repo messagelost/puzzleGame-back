@@ -1,0 +1,249 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.javaclimb.puzzlegameback.mappers.DialogMapper">
+
+	<!--实体映射-->
+	<resultMap id="base_result_map" type="com.javaclimb.puzzlegameback.entity.po.Dialog">
+		<!--对话id-->
+		<result column="dialog_id" property="dialogId"  />
+		<!--对话内容-->
+		<result column="text" property="text"  />
+		<!--对话角色id-->
+		<result column="role_id" property="roleId"  />
+		<!--对话所处章节id-->
+		<result column="chapter_id" property="chapterId"  />
+	</resultMap>
+
+
+	<!-- 通用查询结果列-->
+	<sql id="base_column_list">
+		 dialog_id,text,role_id,chapter_id
+	</sql>
+
+	<sql id="base_condition_filed">
+		<if test="query.dialogId != null and query.dialogId!=''">
+			 and  dialog_id = #{query.dialogId}
+		</if>
+		<if test="query.text != null and query.text!=''">
+			 and  text = #{query.text}
+		</if>
+		<if test="query.roleId != null and query.roleId!=''">
+			 and  role_id = #{query.roleId}
+		</if>
+		<if test="query.chapterId != null and query.chapterId!=''">
+			 and  chapter_id = #{query.chapterId}
+		</if>
+	</sql>
+
+	<!-- 通用查询条件列-->
+	<sql id="query_condition">
+		<where>
+			<include refid="base_condition_filed" />
+			<if test="query.dialogIdFuzzy!= null  and query.dialogIdFuzzy!=''">
+				 and  dialog_id like concat('%', #{query.dialogIdFuzzy}, '%')
+			</if>
+			<if test="query.textFuzzy!= null  and query.textFuzzy!=''">
+				 and  text like concat('%', #{query.textFuzzy}, '%')
+			</if>
+			<if test="query.roleIdFuzzy!= null  and query.roleIdFuzzy!=''">
+				 and  role_id like concat('%', #{query.roleIdFuzzy}, '%')
+			</if>
+			<if test="query.chapterIdFuzzy!= null  and query.chapterIdFuzzy!=''">
+				 and  chapter_id like concat('%', #{query.chapterIdFuzzy}, '%')
+			</if>
+		</where>
+	</sql>
+
+	<!-- 查询集合-->
+	<select id="selectList" resultMap="base_result_map" >
+		 SELECT <include refid="base_column_list" /> FROM dialog <include refid="query_condition" />
+		 <if test="query.orderBy!=null">
+			 order by ${query.orderBy}
+		 </if>
+		 <if test="query.simplePage!=null">
+			 limit #{query.simplePage.start},#{query.simplePage.end}
+		 </if>
+	</select>
+
+	<!-- 查询数量-->
+	<select id="selectCount" resultType="java.lang.Integer" >
+		 SELECT count(1) FROM dialog <include refid="query_condition" />
+	</select>
+
+	<!-- 插入 （匹配有值的字段）-->
+	<insert id="insert" parameterType="com.javaclimb.puzzlegameback.entity.po.Dialog">
+		 INSERT INTO dialog
+		 <trim prefix="(" suffix=")" suffixOverrides="," >
+			<if test="bean.dialogId != null">
+				 dialog_id,
+			</if>
+			<if test="bean.text != null">
+				 text,
+			</if>
+			<if test="bean.roleId != null">
+				 role_id,
+			</if>
+			<if test="bean.chapterId != null">
+				 chapter_id,
+			</if>
+		 </trim>
+		 <trim prefix="values (" suffix=")" suffixOverrides="," >
+			<if test="bean.dialogId!=null">
+				 #{bean.dialogId},
+			</if>
+			<if test="bean.text!=null">
+				 #{bean.text},
+			</if>
+			<if test="bean.roleId!=null">
+				 #{bean.roleId},
+			</if>
+			<if test="bean.chapterId!=null">
+				 #{bean.chapterId},
+			</if>
+		 </trim>
+	</insert>
+
+	<!-- 插入或者更新 （匹配有值的字段）-->
+	<insert id="insertOrUpdate" parameterType="com.javaclimb.puzzlegameback.entity.po.Dialog">
+		 INSERT INTO dialog
+		 <trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="bean.dialogId != null">
+				 dialog_id,
+			</if>
+			<if test="bean.text != null">
+				 text,
+			</if>
+			<if test="bean.roleId != null">
+				 role_id,
+			</if>
+			<if test="bean.chapterId != null">
+				 chapter_id,
+			</if>
+		 </trim>
+		 <trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="bean.dialogId!=null">
+				 #{bean.dialogId},
+			</if>
+			<if test="bean.text!=null">
+				 #{bean.text},
+			</if>
+			<if test="bean.roleId!=null">
+				 #{bean.roleId},
+			</if>
+			<if test="bean.chapterId!=null">
+				 #{bean.chapterId},
+			</if>
+		 </trim>
+		 on DUPLICATE key update 
+		 <trim prefix="" suffix="" suffixOverrides=",">
+			<if test="bean.dialogId!=null">
+				 dialog_id = VALUES(dialog_id),
+			</if>
+			<if test="bean.text!=null">
+				 text = VALUES(text),
+			</if>
+			<if test="bean.roleId!=null">
+				 role_id = VALUES(role_id),
+			</if>
+			<if test="bean.chapterId!=null">
+				 chapter_id = VALUES(chapter_id),
+			</if>
+		 </trim>
+	</insert>
+
+	<!-- 添加 （批量插入）-->
+	<insert id="insertBatch" parameterType="com.javaclimb.puzzlegameback.entity.po.Dialog">
+		 INSERT INTO dialog(
+			 dialog_id,
+			 text,
+			 role_id,
+			 chapter_id
+		 )values
+		 <foreach collection="list" item="item" separator=",">
+			 (
+				 #{item.dialogId},
+				 #{item.text},
+				 #{item.roleId},
+				 #{item.chapterId}
+			 )
+		 </foreach>
+	</insert>
+
+	<!-- 批量新增修改 （批量插入）-->
+	<insert id="insertOrUpdateBatch" parameterType="com.javaclimb.puzzlegameback.entity.po.Dialog">
+		 INSERT INTO dialog(
+			 dialog_id,
+			 text,
+			 role_id,
+			 chapter_id
+		 )values
+		 <foreach collection="list" item="item" separator=",">
+			 (
+				 #{item.dialogId},
+				 #{item.text},
+				 #{item.roleId},
+				 #{item.chapterId}
+			 )
+		 </foreach>
+			on DUPLICATE key update 
+			dialog_id = VALUES(dialog_id),
+			text = VALUES(text),
+			role_id = VALUES(role_id),
+			chapter_id = VALUES(chapter_id)
+	</insert>
+
+	<!--多条件修改-->
+	<update id="updateByParam" parameterType="com.javaclimb.puzzlegameback.entity.query.DialogQuery">
+		 UPDATE dialog
+ 		 <set> 
+			<if test="bean.dialogId != null">
+				 dialog_id = #{bean.dialogId},
+			</if>
+			<if test="bean.text != null">
+				 text = #{bean.text},
+			</if>
+			<if test="bean.roleId != null">
+				 role_id = #{bean.roleId},
+			</if>
+			<if test="bean.chapterId != null">
+				 chapter_id = #{bean.chapterId},
+			</if>
+ 		 </set>
+ 		 <include refid="query_condition" />
+	</update>
+
+	<!--多条件删除-->
+	<delete id="deleteByParam">
+		 delete from dialog
+ 		 <include refid="query_condition" />
+	</delete>
+
+	<!-- 根据DialogId修改-->
+	<update id="updateByDialogId" parameterType="com.javaclimb.puzzlegameback.entity.po.Dialog">
+		 UPDATE dialog
+ 		 <set> 
+			<if test="bean.text != null">
+				 text = #{bean.text},
+			</if>
+			<if test="bean.roleId != null">
+				 role_id = #{bean.roleId},
+			</if>
+			<if test="bean.chapterId != null">
+				 chapter_id = #{bean.chapterId},
+			</if>
+ 		 </set>
+ 		 where dialog_id=#{dialogId}
+	</update>
+
+	<!-- 根据DialogId删除-->
+	<delete id="deleteByDialogId">
+		delete from dialog where dialog_id=#{dialogId}
+	</delete>
+
+	<!-- 根据PrimaryKey获取对象-->
+	<select id="selectByDialogId" resultMap="base_result_map" >
+		select <include refid="base_column_list" /> from dialog where dialog_id=#{dialogId}
+	</select>
+
+</mapper>

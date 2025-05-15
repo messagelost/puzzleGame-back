@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.javaclimb.puzzlegameback.mappers.RoleStoryMapper">
+
+	<!--实体映射-->
+	<resultMap id="base_result_map" type="com.javaclimb.puzzlegameback.entity.po.RoleStory">
+		<!--角色id-->
+		<result column="role_id" property="roleId"  />
+		<!--故事id-->
+		<result column="story_id" property="storyId"  />
+	</resultMap>
+
+
+	<!-- 通用查询结果列-->
+	<sql id="base_column_list">
+		 role_id,story_id
+	</sql>
+
+	<sql id="base_condition_filed">
+		<if test="query.roleId != null and query.roleId!=''">
+			 and  role_id = #{query.roleId}
+		</if>
+		<if test="query.storyId != null and query.storyId!=''">
+			 and  story_id = #{query.storyId}
+		</if>
+	</sql>
+
+	<!-- 通用查询条件列-->
+	<sql id="query_condition">
+		<where>
+			<include refid="base_condition_filed" />
+			<if test="query.roleIdFuzzy!= null  and query.roleIdFuzzy!=''">
+				 and  role_id like concat('%', #{query.roleIdFuzzy}, '%')
+			</if>
+			<if test="query.storyIdFuzzy!= null  and query.storyIdFuzzy!=''">
+				 and  story_id like concat('%', #{query.storyIdFuzzy}, '%')
+			</if>
+		</where>
+	</sql>
+
+	<!-- 查询集合-->
+	<select id="selectList" resultMap="base_result_map" >
+		 SELECT <include refid="base_column_list" /> FROM role_story <include refid="query_condition" />
+		 <if test="query.orderBy!=null">
+			 order by ${query.orderBy}
+		 </if>
+		 <if test="query.simplePage!=null">
+			 limit #{query.simplePage.start},#{query.simplePage.end}
+		 </if>
+	</select>
+
+	<!-- 查询数量-->
+	<select id="selectCount" resultType="java.lang.Integer" >
+		 SELECT count(1) FROM role_story <include refid="query_condition" />
+	</select>
+
+	<!-- 插入 （匹配有值的字段）-->
+	<insert id="insert" parameterType="com.javaclimb.puzzlegameback.entity.po.RoleStory">
+		 INSERT INTO role_story
+		 <trim prefix="(" suffix=")" suffixOverrides="," >
+			<if test="bean.roleId != null">
+				 role_id,
+			</if>
+			<if test="bean.storyId != null">
+				 story_id,
+			</if>
+		 </trim>
+		 <trim prefix="values (" suffix=")" suffixOverrides="," >
+			<if test="bean.roleId!=null">
+				 #{bean.roleId},
+			</if>
+			<if test="bean.storyId!=null">
+				 #{bean.storyId},
+			</if>
+		 </trim>
+	</insert>
+
+	<!-- 插入或者更新 （匹配有值的字段）-->
+	<insert id="insertOrUpdate" parameterType="com.javaclimb.puzzlegameback.entity.po.RoleStory">
+		 INSERT INTO role_story
+		 <trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="bean.roleId != null">
+				 role_id,
+			</if>
+			<if test="bean.storyId != null">
+				 story_id,
+			</if>
+		 </trim>
+		 <trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="bean.roleId!=null">
+				 #{bean.roleId},
+			</if>
+			<if test="bean.storyId!=null">
+				 #{bean.storyId},
+			</if>
+		 </trim>
+		 on DUPLICATE key update 
+		 <trim prefix="" suffix="" suffixOverrides=",">
+			<if test="bean.roleId!=null">
+				 role_id = VALUES(role_id),
+			</if>
+			<if test="bean.storyId!=null">
+				 story_id = VALUES(story_id),
+			</if>
+		 </trim>
+	</insert>
+
+	<!-- 添加 （批量插入）-->
+	<insert id="insertBatch" parameterType="com.javaclimb.puzzlegameback.entity.po.RoleStory">
+		 INSERT INTO role_story(
+			 role_id,
+			 story_id
+		 )values
+		 <foreach collection="list" item="item" separator=",">
+			 (
+				 #{item.roleId},
+				 #{item.storyId}
+			 )
+		 </foreach>
+	</insert>
+
+	<!-- 批量新增修改 （批量插入）-->
+	<insert id="insertOrUpdateBatch" parameterType="com.javaclimb.puzzlegameback.entity.po.RoleStory">
+		 INSERT INTO role_story(
+			 role_id,
+			 story_id
+		 )values
+		 <foreach collection="list" item="item" separator=",">
+			 (
+				 #{item.roleId},
+				 #{item.storyId}
+			 )
+		 </foreach>
+			on DUPLICATE key update 
+			role_id = VALUES(role_id),
+			story_id = VALUES(story_id)
+	</insert>
+
+	<!--多条件修改-->
+	<update id="updateByParam" parameterType="com.javaclimb.puzzlegameback.entity.query.RoleStoryQuery">
+		 UPDATE role_story
+ 		 <set> 
+			<if test="bean.roleId != null">
+				 role_id = #{bean.roleId},
+			</if>
+			<if test="bean.storyId != null">
+				 story_id = #{bean.storyId},
+			</if>
+ 		 </set>
+ 		 <include refid="query_condition" />
+	</update>
+
+	<!--多条件删除-->
+	<delete id="deleteByParam">
+		 delete from role_story
+ 		 <include refid="query_condition" />
+	</delete>
+
+	<!-- 根据RoleIdAndStoryId修改-->
+	<update id="updateByRoleIdAndStoryId" parameterType="com.javaclimb.puzzlegameback.entity.po.RoleStory">
+		 UPDATE role_story
+ 		 <set> 
+ 		 </set>
+ 		 where role_id=#{roleId} and story_id=#{storyId}
+	</update>
+
+	<!-- 根据RoleIdAndStoryId删除-->
+	<delete id="deleteByRoleIdAndStoryId">
+		delete from role_story where role_id=#{roleId} and story_id=#{storyId}
+	</delete>
+
+	<!-- 根据PrimaryKey获取对象-->
+	<select id="selectByRoleIdAndStoryId" resultMap="base_result_map" >
+		select <include refid="base_column_list" /> from role_story where role_id=#{roleId} and story_id=#{storyId}
+	</select>
+
+</mapper>

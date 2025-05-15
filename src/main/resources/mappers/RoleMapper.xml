@@ -1,0 +1,249 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.javaclimb.puzzlegameback.mappers.RoleMapper">
+
+	<!--实体映射-->
+	<resultMap id="base_result_map" type="com.javaclimb.puzzlegameback.entity.po.Role">
+		<!--角色id-->
+		<result column="role_id" property="roleId"  />
+		<!--角色名字-->
+		<result column="name" property="name"  />
+		<!--角色立绘url-->
+		<result column="pic" property="pic"  />
+		<!--角色介绍-->
+		<result column="introduction" property="introduction"  />
+	</resultMap>
+
+
+	<!-- 通用查询结果列-->
+	<sql id="base_column_list">
+		 role_id,name,pic,introduction
+	</sql>
+
+	<sql id="base_condition_filed">
+		<if test="query.roleId != null and query.roleId!=''">
+			 and  role_id = #{query.roleId}
+		</if>
+		<if test="query.name != null and query.name!=''">
+			 and  name = #{query.name}
+		</if>
+		<if test="query.pic != null and query.pic!=''">
+			 and  pic = #{query.pic}
+		</if>
+		<if test="query.introduction != null and query.introduction!=''">
+			 and  introduction = #{query.introduction}
+		</if>
+	</sql>
+
+	<!-- 通用查询条件列-->
+	<sql id="query_condition">
+		<where>
+			<include refid="base_condition_filed" />
+			<if test="query.roleIdFuzzy!= null  and query.roleIdFuzzy!=''">
+				 and  role_id like concat('%', #{query.roleIdFuzzy}, '%')
+			</if>
+			<if test="query.nameFuzzy!= null  and query.nameFuzzy!=''">
+				 and  name like concat('%', #{query.nameFuzzy}, '%')
+			</if>
+			<if test="query.picFuzzy!= null  and query.picFuzzy!=''">
+				 and  pic like concat('%', #{query.picFuzzy}, '%')
+			</if>
+			<if test="query.introductionFuzzy!= null  and query.introductionFuzzy!=''">
+				 and  introduction like concat('%', #{query.introductionFuzzy}, '%')
+			</if>
+		</where>
+	</sql>
+
+	<!-- 查询集合-->
+	<select id="selectList" resultMap="base_result_map" >
+		 SELECT <include refid="base_column_list" /> FROM role <include refid="query_condition" />
+		 <if test="query.orderBy!=null">
+			 order by ${query.orderBy}
+		 </if>
+		 <if test="query.simplePage!=null">
+			 limit #{query.simplePage.start},#{query.simplePage.end}
+		 </if>
+	</select>
+
+	<!-- 查询数量-->
+	<select id="selectCount" resultType="java.lang.Integer" >
+		 SELECT count(1) FROM role <include refid="query_condition" />
+	</select>
+
+	<!-- 插入 （匹配有值的字段）-->
+	<insert id="insert" parameterType="com.javaclimb.puzzlegameback.entity.po.Role">
+		 INSERT INTO role
+		 <trim prefix="(" suffix=")" suffixOverrides="," >
+			<if test="bean.roleId != null">
+				 role_id,
+			</if>
+			<if test="bean.name != null">
+				 name,
+			</if>
+			<if test="bean.pic != null">
+				 pic,
+			</if>
+			<if test="bean.introduction != null">
+				 introduction,
+			</if>
+		 </trim>
+		 <trim prefix="values (" suffix=")" suffixOverrides="," >
+			<if test="bean.roleId!=null">
+				 #{bean.roleId},
+			</if>
+			<if test="bean.name!=null">
+				 #{bean.name},
+			</if>
+			<if test="bean.pic!=null">
+				 #{bean.pic},
+			</if>
+			<if test="bean.introduction!=null">
+				 #{bean.introduction},
+			</if>
+		 </trim>
+	</insert>
+
+	<!-- 插入或者更新 （匹配有值的字段）-->
+	<insert id="insertOrUpdate" parameterType="com.javaclimb.puzzlegameback.entity.po.Role">
+		 INSERT INTO role
+		 <trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="bean.roleId != null">
+				 role_id,
+			</if>
+			<if test="bean.name != null">
+				 name,
+			</if>
+			<if test="bean.pic != null">
+				 pic,
+			</if>
+			<if test="bean.introduction != null">
+				 introduction,
+			</if>
+		 </trim>
+		 <trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="bean.roleId!=null">
+				 #{bean.roleId},
+			</if>
+			<if test="bean.name!=null">
+				 #{bean.name},
+			</if>
+			<if test="bean.pic!=null">
+				 #{bean.pic},
+			</if>
+			<if test="bean.introduction!=null">
+				 #{bean.introduction},
+			</if>
+		 </trim>
+		 on DUPLICATE key update 
+		 <trim prefix="" suffix="" suffixOverrides=",">
+			<if test="bean.roleId!=null">
+				 role_id = VALUES(role_id),
+			</if>
+			<if test="bean.name!=null">
+				 name = VALUES(name),
+			</if>
+			<if test="bean.pic!=null">
+				 pic = VALUES(pic),
+			</if>
+			<if test="bean.introduction!=null">
+				 introduction = VALUES(introduction),
+			</if>
+		 </trim>
+	</insert>
+
+	<!-- 添加 （批量插入）-->
+	<insert id="insertBatch" parameterType="com.javaclimb.puzzlegameback.entity.po.Role">
+		 INSERT INTO role(
+			 role_id,
+			 name,
+			 pic,
+			 introduction
+		 )values
+		 <foreach collection="list" item="item" separator=",">
+			 (
+				 #{item.roleId},
+				 #{item.name},
+				 #{item.pic},
+				 #{item.introduction}
+			 )
+		 </foreach>
+	</insert>
+
+	<!-- 批量新增修改 （批量插入）-->
+	<insert id="insertOrUpdateBatch" parameterType="com.javaclimb.puzzlegameback.entity.po.Role">
+		 INSERT INTO role(
+			 role_id,
+			 name,
+			 pic,
+			 introduction
+		 )values
+		 <foreach collection="list" item="item" separator=",">
+			 (
+				 #{item.roleId},
+				 #{item.name},
+				 #{item.pic},
+				 #{item.introduction}
+			 )
+		 </foreach>
+			on DUPLICATE key update 
+			role_id = VALUES(role_id),
+			name = VALUES(name),
+			pic = VALUES(pic),
+			introduction = VALUES(introduction)
+	</insert>
+
+	<!--多条件修改-->
+	<update id="updateByParam" parameterType="com.javaclimb.puzzlegameback.entity.query.RoleQuery">
+		 UPDATE role
+ 		 <set> 
+			<if test="bean.roleId != null">
+				 role_id = #{bean.roleId},
+			</if>
+			<if test="bean.name != null">
+				 name = #{bean.name},
+			</if>
+			<if test="bean.pic != null">
+				 pic = #{bean.pic},
+			</if>
+			<if test="bean.introduction != null">
+				 introduction = #{bean.introduction},
+			</if>
+ 		 </set>
+ 		 <include refid="query_condition" />
+	</update>
+
+	<!--多条件删除-->
+	<delete id="deleteByParam">
+		 delete from role
+ 		 <include refid="query_condition" />
+	</delete>
+
+	<!-- 根据RoleId修改-->
+	<update id="updateByRoleId" parameterType="com.javaclimb.puzzlegameback.entity.po.Role">
+		 UPDATE role
+ 		 <set> 
+			<if test="bean.name != null">
+				 name = #{bean.name},
+			</if>
+			<if test="bean.pic != null">
+				 pic = #{bean.pic},
+			</if>
+			<if test="bean.introduction != null">
+				 introduction = #{bean.introduction},
+			</if>
+ 		 </set>
+ 		 where role_id=#{roleId}
+	</update>
+
+	<!-- 根据RoleId删除-->
+	<delete id="deleteByRoleId">
+		delete from role where role_id=#{roleId}
+	</delete>
+
+	<!-- 根据PrimaryKey获取对象-->
+	<select id="selectByRoleId" resultMap="base_result_map" >
+		select <include refid="base_column_list" /> from role where role_id=#{roleId}
+	</select>
+
+</mapper>
