@@ -1,11 +1,16 @@
+# 第一阶段：构建
+FROM maven:3.8.6-openjdk-17 AS build
+WORKDIR /app
+COPY pom.xml .
+COPY src ./src
+RUN mvn clean package -DskipTests
+
+# 第二阶段：运行
 FROM openjdk:17-jdk-slim
+WORKDIR /app
+COPY --from=build /app/target/puzzleGame-back-0.0.1-SNAPSHOT.jar app.jar
 
-ARG JAR_FILE=target/puzzleGame-back-0.0.1-SNAPSHOT.jar
-COPY ${JAR_FILE} app.jar
-
-# 设置默认端口
 ENV JAVA_OPTS=""
 EXPOSE 8080
 
-# 启动 jar 包
 ENTRYPOINT ["sh", "-c", "java $JAVA_OPTS -jar app.jar"]
